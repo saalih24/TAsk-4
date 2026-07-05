@@ -1,0 +1,66 @@
+# Requirements — Student Performance Analysis
+
+## 1. Software Requirements
+
+| Requirement | Details |
+|---|---|
+| Language | Python 3.9 or later |
+| Package manager | pip |
+| Required libraries | `pandas`, `matplotlib` (see `requirements.txt`) |
+| Optional (for report generation) | none — the PDF report script uses matplotlib's built-in `PdfPages`, no extra libraries needed |
+
+Install with:
+```bash
+pip install -r requirements.txt
+```
+
+## 2. Data Requirements
+
+| Requirement | Details |
+|---|---|
+| Input format | CSV file (`Student_Performance.csv`) |
+| Required columns | `student_id`, `age`, `gender`, `school_type`, `parent_education`, `study_hours`, `attendance_percentage`, `internet_access`, `travel_time`, `extra_activities`, `study_method`, `math_score`, `science_score`, `english_score`, `overall_score`, `final_grade` |
+| Binary categorical columns | `internet_access`, `extra_activities` must contain only `"yes"` / `"no"` values (case-sensitive as loaded) |
+| Numeric score columns | `math_score`, `science_score`, `english_score`, `overall_score` expected in the 0–100 range |
+| File size (tested) | 25,000 rows, 16 columns |
+
+## 3. Functional Requirements
+
+The code must be able to:
+
+1. **Load** the CSV into a DataFrame and confirm it read successfully.
+2. **Inspect** the data — shape, column names, dtypes, missing-value counts.
+3. **Clean** the data — detect and remove exact duplicate rows.
+4. **Encode** binary categorical columns (`yes`/`no` → `1`/`0`) exactly once per load.
+5. **Summarize** the data — numeric (`describe()`) and categorical (`describe(include="O")`) statistics.
+6. **Aggregate** — compute group averages (e.g., score by age, score by parent education).
+7. **Visualize** — produce at minimum:
+   - a bar chart comparing two metrics across a category (age)
+   - a bar chart ranking a metric across a category (parent education)
+   - a pie chart showing proportional composition (subject scores)
+   - a pie chart showing distribution (final grade)
+8. **Report** — output findings in a readable format (text file and/or PDF).
+
+## 4. Environment / System Requirements
+
+| Requirement | Details |
+|---|---|
+| OS | Windows, macOS, or Linux (tested on Linux; original development on Windows) |
+| Memory | Minimal — dataset (~2–3 MB, 25,000 rows) comfortably fits in memory on any modern machine |
+| Disk | A few MB free for output charts/report files |
+| Display | Not required — scripts run headlessly (matplotlib `Agg` backend recommended for non-interactive environments) |
+
+## 5. Known Constraints
+
+- Mapping steps (`.map({"yes": 1, "no": 0})`) are **not idempotent** — running them twice on the same column converts valid values to `NaN`. Reload the CSV or guard the mapping with a dtype check before re-running.
+- Some pandas versions enforce a strict `string` dtype that can raise a `TypeError` when assigning integers into a text column via `.loc`. Cast the column to `object` first (`.astype(object)`) before mapping if this occurs.
+- Column assignments on a DataFrame that may be a view/slice of another can trigger a `SettingWithCopyWarning`; use `.loc[:, col]` for assignment and `.copy()` after any filtering operation.
+
+## 6. Deliverables Checklist
+
+- [x] `requirements.txt` — Python package dependencies
+- [x] Data cleaning (duplicate removal, missing-value check)
+- [x] Categorical encoding
+- [x] Descriptive statistics (numeric + categorical)
+- [x] 4 required chart types (2 bar, 2 pie)
+- [x] Written insights/report (text and/or PDF)
